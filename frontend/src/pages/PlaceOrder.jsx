@@ -4,7 +4,7 @@ import { useState } from "react";
 import CartTotal from "../component/CartTotal";
 import  Easypaisa from '../assets/Easypaisa.webp'
 import { shopDataContext } from "../context/ShopContext";
-import { authDataContext } from "../context/authcontext";
+import { authDataContext } from "../context/Authcontext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
