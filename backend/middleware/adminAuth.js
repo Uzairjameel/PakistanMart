@@ -1,0 +1,21 @@
+import jwt from 'jsonwebtoken'
+
+const adminAuth = async (req,res,next) => {
+    try {
+        let {token} = req.cookies
+    if (!token) {
+        return res.status(400).json({message:'Not Authorize Login Again'})
+    }
+    let verifyToken = jwt.verify(token,process.env.JWT_SECREAT)
+    if (!verifyToken) {
+        return res.status(400).json({message:'Not Authorized login again,Invalid token'})
+    }
+     req.adminEmail = process.env.ADMIN_EMAIL
+     next()
+    } catch (error) {
+        console.log('adminAuth error')
+        return res.status(500).json({message:`adminauth error ${error}`})
+    }
+}
+
+export default adminAuth
