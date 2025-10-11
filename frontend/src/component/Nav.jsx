@@ -11,7 +11,7 @@ import { IoMdHome } from "react-icons/io";
 import { HiOutlineCollection } from "react-icons/hi";
 import { MdContacts } from "react-icons/md";
 import axios from "axios";
-import { authDataContext } from "../context/authcontext";
+import { authDataContext } from "../context/Authcontext";
 import { shopDataContext } from "../context/ShopContext";
 function Nav() {
     let {getCurrentUser,UserData} = useContext(UserDataContext)
