@@ -24,8 +24,8 @@ export const registration = async (req,res)=>{
         let token = genToken(user._id);
            res.cookie('token', token, {
                 httpOnly: true,
-                secure: false,        // HTTPS par 'true' karna
-                sameSite: 'strict',
+                secure: true,        // HTTPS par 'true' karna
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 din
             });
         return res.status(201).json(user)
@@ -49,8 +49,8 @@ export const login = async(req,res)=>{
          let token = genToken(user._id);
            res.cookie('token', token, {
                 httpOnly: true,
-                secure: false,        // HTTPS par 'true' karna
-                sameSite: 'strict',
+                secure: true,        // HTTPS par 'true' karna
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 din
             });
         return res.status(201).json({user,message:'login successfully'})
@@ -79,8 +79,8 @@ export const Googlelogin = async (req,res)=>{
         let token = genToken(user._id);
            res.cookie('token', token, {
                 httpOnly: true,
-                secure: false,        // HTTPS par 'true' karna
-                sameSite: 'strict',
+                secure: true,        // HTTPS par 'true' karna
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 din
             });
         return res.status(200).json(user)
@@ -97,8 +97,8 @@ export const adminLogin = async (req,res) => {
             let token = genToken1(email);
            res.cookie('token', token, {
                 httpOnly: true,
-                secure: false,        // HTTPS par 'true' karna
-                sameSite: 'strict',
+                secure: true,        // HTTPS par 'true' karna
+                sameSite: 'none',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 din
             });
             return res.status(200).json(token)
