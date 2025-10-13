@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Background from "../component/Background";
 import Hero from "../component/Hero";
 import Product from "./Product";
-import OurPolicy from "../component/Ourpolicy";
+import OurPolicy from "../component/OurPolicy";
 import NewLetterBox from "../component/NewLetterBox";
 import Footer from "../component/Footer";
 
