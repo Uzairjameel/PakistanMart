@@ -1,6 +1,6 @@
 import React, { createContext } from "react";
 export const authDataContext = createContext()
-let ServerUrl = "http://localhost:8000"
+let ServerUrl = "https://pakistanmart-production.up.railway.app"
 let value = {
     ServerUrl
 }
