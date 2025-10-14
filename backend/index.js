@@ -15,8 +15,10 @@ let app = express()
 app.use(express.json())
 app.use(cors({
     origin:['https://pakistanmart.netlify.app','http://localhost:5174'],
-    credentials:true
-}))
+    credentials:true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(cookieParser())
 app.use('/api/auth',authRoutes)
 app.use('/api/user',userRoutes)
