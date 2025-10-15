@@ -26,6 +26,10 @@ app.use('/api/product',productRoutes)
 app.use('/api/cart',cartRoutes)
 app.use('/api/order',orderRoutes)
 
+app.get('/', (req, res) => {
+  res.send('✅ PakistanMart Backend is Running Successfully!');
+});
+
 
 app.listen(port,()=>{
     console.log(`✅ Server running on port ${port}`)
