@@ -1,53 +1,50 @@
-import React from "react";
-import Logo from '../assets/Logo.png'
-
-function Footer() {
-    return(
-        <div className="w-[100%] md:h-[36vh] h-[21vh] mb-[77px] md:mb-[0px]">
-            <div className="w-[100%] md:h-[30vh] h-[15vh] md:mb-[0px] bg-[#dbfcfcec] flex items-center justify-center md:px-[50px] px-[5px]">
-                <div className="md:w-[30%] w-[35%] h-[100%] flex justify-center flex-col gap-[5px]">
-                    <div className="flex items-start justify-start gap-[5px] mt-[10px] md:mt-[40px]">
-                        <img src={Logo} alt="" className="md:w-[40px] md:h-[40px] w-[30px] h-[30px]"/>
-                        <p className="text-[19px] md:text-[20px] text-[black]">PakistanMart</p>
-    
-                    </div>
-                    <p className="text-[15px] text-[#1e2223] hidden md:block">
-                            PakistanMart is your all-in-one online shopping destination offering top-quality products, unbeatable deals and fast delivery-all backed by trusted service designed to make your life easier every day.
-                        </p>
-                        <p className="text-[15px] text-[#1e2223] flex md:hidden">Fast. Easy. Reliable. PakistanMart Shopping</p>
-
-                    
-                </div>
-                <div className="md:w-[25%] w-[30%] h-[100%] flex items-center justify-center flex-col text-center">
-                        <div className="flex items-center justify-center gap-[5px] mt-[10px] md:mt-[40px] ">
-                            <p className="text-[19px] md:text-[20px] text-[#1e2223] font-sans">COMPANY</p>
-                        </div>
-                        <ul>
-                            <li className="text-[15px] text-[#1e2223] hidden md:block cursor-pointer">Home</li>
-                            <li className="text-[15px] text-[#1e2223] cursor-pointer">About us </li>
-                            <li className="text-[15px] text-[#1e2223] hidden md:block cursor-pointer">Delivery</li>
-                            <li className="text-[15px] text-[#1e2223] cursor-pointer">Privacy Policy</li>
-                        </ul>
-                    </div>
-
-                    <div className="md:w-[25%] w-[40%] h-[100%] flex items-center justify-center flex-col text-center">
-                        <div className="flex items-center justify-center gap-[5px] mt-[10px] md:mt-[40px] ">
-                            <p className="text-[19px] md:text-[20px] text-[#1e2223] font-sans">GET IN TOUCH</p>
-                        </div>
-                        <ul>
-                            <li className="text-[15px] text-[#1e2223] hidden md:block cursor-pointer">+92 3282737478</li>
-                            <li className="text-[15px] text-[#1e2223] cursor-pointer">uzairjameel248@gmail.com</li>
-                            <li className="text-[15px] text-[#1e2223] hidden md:block cursor-pointer">+92 3022657373</li>
-                            <li className="text-[15px] text-[#1e2223] cursor-pointer">admin@PakistanMart.com</li>
-                        </ul>
-                    </div>
-            </div>
-            <div className="w-[100%] h-[1px] bg-slate-400"></div>
-            <div className="w-[100%] h-[5vh] bg-[#dbfcfcec] flex items-center justify-center">
-                Copyright 2025@PakistanMart.com-All Right Reserved
-            </div>
+import { Link } from "react-router-dom";
+import { FiArrowUpRight } from "react-icons/fi";
+export default function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="container footer-grid">
+        <div>
+          <Link to="/" className="wordmark">
+            pakistan<span>mart.</span>
+          </Link>
+          <p>
+            A little local. A lot of style.
+            <br />
+            Find something that feels like you.
+          </p>
+          <span className="footer-signature">From Pakistan, with love. ✳︎</span>
         </div>
-    )
+        <div>
+          <h3>Take a look</h3>
+          <Link to="/collection">
+            The collection <FiArrowUpRight />
+          </Link>
+          <Link to="/about">
+            Our story <FiArrowUpRight />
+          </Link>
+          <Link to="/order">
+            Your orders <FiArrowUpRight />
+          </Link>
+        </div>
+        <div>
+          <h3>Let’s talk</h3>
+          <Link to="/contact">
+            Get in touch <FiArrowUpRight />
+          </Link>
+          <a href="mailto:uzairjameel248@gmail.com">
+            Email us <FiArrowUpRight />
+          </a>
+          <a href="tel:+923282737478">+92 328 2737478</a>
+        </div>
+      </div>
+      <div className="container footer-bottom">
+        <span>
+          © {new Date().getFullYear()} PakistanMart. All rights reserved.
+        </span>
+        <span>Everyday, but better.</span>
+        <a href="#top">Back to top ↑</a>
+      </div>
+    </footer>
+  );
 }
-
-export default Footer

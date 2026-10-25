@@ -1,39 +1,38 @@
-import React from "react";
-import Title from "../component/Title";
-import contact from '../assets/contact.png'
-import NewLetterBox from "../component/NewLetterBox";
-function Contact() {
-    return(
-        <div className="w-[99vw] min-h-[100vh] flex items-center justify-center flex-col bg-gradient-to-l from-[#141414] to-[#0c2025] gap-[50px] pt-[80px]">
-            <Title text1={'CONTACT'} text2={'US'}/>
-            <div className="w-[100%] flex items-center justify-center flex-col lg:flex-row">
-                <div className="lg:w-[50%] w-[100%] flex items-center justify-center">
-                    <img src={contact} alt="" className="lg:w-[70%] w-[80%] shadow-md shadow-black rounded-sm"/>
-                </div>
-                <div className="lg:w-[50%] w-[80%] flex items-start justify-center gap-[20px] flex-col mt-[20px] lg:mt-[0px] ">
-                    <p className="lg:w-[80%] w-[100%] text-[white] font-bold lg:text-[18px] text-[15px]">Our Store</p>
-                    <p className="lg:w-[80%] w-[100%] text-[white] md:text-[16px] text-[13px]">
-                        <p>12345 Random Station</p>
-                        <p>random city , state , india</p>
-                    </p>
-                    <p className="lg:w-[80%] w-[100%] text-[white] md:text-[16px] text-[13px]">
-                        <p>tel: +92-3282737478</p>
-                        <p>Email: admin@PakistanMart.com</p>
-                    </p>
-                    <p className="lg:w-[80%] w-[100%] text-[15px] text-[white] lg:text-[18px] mt-[10px] font-bold">
-                        Careers at PakistanMart
-                    </p>
-                    <p className="lg:w-[80%] w-[100%] text-[white] md:text-[16px] text-[13px] ">
-                        Learn more about our teams and job openings
-                    </p>
-                    <button className="px-[30px] py-[20px] flex items-center justify-center text-[white] bg-trasnparent border active:bg-slate-600 rounded-md">
-                        Explore jobs 
-                    </button>
-                </div>
-            </div>
-            <NewLetterBox/>
+import { FiMail, FiPhone, FiArrowUpRight } from "react-icons/fi";
+import Footer from "../component/Footer";
+export default function Contact() {
+  return (
+    <main className="storefront">
+      <section className="container section contact-page">
+        <span className="eyebrow">WE’RE HERE FOR YOU</span>
+        <h1>
+          Let’s talk<em>.</em>
+        </h1>
+        <p>
+          A question about your order? Need a little style advice?
+          <br />
+          There’s a real person on the other side.
+        </p>
+        <div className="contact-grid">
+          <a href="mailto:uzairjameel248@gmail.com">
+            <FiMail />
+            <h2>Drop us a line.</h2>
+            <p>uzairjameel248@gmail.com</p>
+            <span>
+              Email us <FiArrowUpRight />
+            </span>
+          </a>
+          <a href="tel:+923282737478">
+            <FiPhone />
+            <h2>Say hello.</h2>
+            <p>+92 328 2737478</p>
+            <span>
+              Give us a call <FiArrowUpRight />
+            </span>
+          </a>
         </div>
-    )
+      </section>
+      <Footer />
+    </main>
+  );
 }
-
-export default Contact

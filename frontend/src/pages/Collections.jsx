@@ -1,204 +1,92 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { FaChevronRight, FaChevronDown } from "react-icons/fa";
-import Title from "../component/Title";
+import { useContext, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { shopDataContext } from "../context/ShopContext";
 import Card from "../component/Card";
-
-function Collections() {
-  let [showFilter, setShowFilter] = useState(false);
-  let { products,search,showSearch} = useContext(shopDataContext);
-  let [filterProduct, setFilterProduct] = useState([]);
-  let [category, setCategory] = useState([]);
-  let [subCategory, setSubCategory] = useState([]);
-  let [sortType, setSortType] = useState("relavent");
-
-  const toggleCategory = (e) => {
-    if (category.includes(e.target.value)) {
-      setCategory((prev) => prev.filter((item) => item !== e.target.value));
-    } else {
-      setCategory((prev) => [...prev, e.target.value]);
-    }
-  };
-
-  const toggleSubCategory = (e) => {
-    if (subCategory.includes(e.target.value)) {
-      setSubCategory((prev) =>
-        prev.filter((item) => item !== e.target.value)
-      );
-    } else {
-      setSubCategory((prev) => [...prev, e.target.value]);
-    }
-  };
-
-  // ✅ Filtering
-  const applyFilter = useCallback(() => {
-    let productCopy = products.slice();
-
-    if (showSearch&&search) {
-      productCopy = productCopy.filter(item =>item.name.toLowerCase().includes(search.toLowerCase()))
-    }
-
-    if (category.length > 0) {
-      productCopy = productCopy.filter((item) =>
-        category.includes(item.category)
-      );
-    }
-
-    if (subCategory.length > 0) {
-      productCopy = productCopy.filter((item) =>
-        subCategory.includes(item.subCategory)
-      );
-    }
-
-    return productCopy;
-  }, [category, subCategory, products,search,showSearch]);
-
-  // ✅ Sorting
-  const sortProduct = useCallback(
-    (items) => {
-      let fbCopy = items.slice();
-
-      switch (sortType) {
-        case "low-high":
-          return fbCopy.sort((a, b) => a.price - b.price);
-        case "high-low":
-          return fbCopy.sort((a, b) => b.price - a.price);
-        default:
-          return fbCopy;
-      }
-    },
-    [sortType]
-  );
-
-  // ✅ Master effect (filter + sort ek hi jagah pe)
-  useEffect(() => {
-    let filtered = applyFilter();
-    let sorted = sortProduct(filtered);
-    setFilterProduct(sorted);
-  }, [products, category, subCategory, sortType, applyFilter, sortProduct,search,showSearch]);
-
+import CatalogState from "../component/CatalogState";
+import Footer from "../component/Footer";
+import { FiSearch, FiX } from "react-icons/fi";
+export default function Collections() {
+  const { products, productsLoading, productsError, search, setSearch } =
+    useContext(shopDataContext);
+  const [params, setParams] = useSearchParams();
+  const category = params.get("category") || "All";
+  const [sort, setSort] = useState("newest");
+  const items = useMemo(() => {
+    let result = products.filter(
+      (p) =>
+        (category === "All" || p.category === category) &&
+        p.name.toLowerCase().includes(search.toLowerCase()),
+    );
+    if (sort === "low") result.sort((a, b) => a.price - b.price);
+    if (sort === "high") result.sort((a, b) => b.price - a.price);
+    return result;
+  }, [products, category, search, sort]);
   return (
-    <div className="w-[99vw] min-h-[100vh] bg-gradient-to-l from-[#141414] to-[#0c2025] flex items-start flex-col md:flex-row justify-start pt-[70px] overflow-x-hidden z-[2] pb-[70px] md:pb-0">
-      {/* Sidebar Filter */}
-      <div
-        className={`md:w-[30vw] lg:w-[20vw] w-[100vw] md:min-h-[100vh] ${
-          showFilter ? "h-auto" : "h-[8vh]"
-        }  p-[20px] border-r-[1px] border-gray-400 text-[#aaf5fa] lg:fixed`}
-      >
-        <p
-          className="text-[25px] font-semibold flex gap-[5px] items-center justify-start cursor-pointer"
-          onClick={() => setShowFilter((prev) => !prev)}
-        >
-          FILTERS
-          {!showFilter && <FaChevronRight className="text-[18px] md:hidden" />}
-          {showFilter && <FaChevronDown className="text-[18px] md:hidden" />}
+    <main className="storefront">
+      <section className="collection-intro container">
+        <span className="eyebrow">GOOD STYLE STARTS HERE</span>
+        <h1>
+          The everyday edit<span>.</span>
+        </h1>
+        <p>
+          Find the pieces that feel like you. Explore, discover, make them
+          yours.
         </p>
-
-        {/* Categories */}
-        <div
-          className={`border-[2px] border-[#dedcdc] pl-5 py-3 mt-6 rounded-md bg-slate-600 ${
-            showFilter ? "" : "hidden"
-          } md:block`}
-        >
-          <p className="text-[18px] text-[#f8fafa] ">CATEGORIES</p>
-          <div className="w-[230px] h-[120px] flex items-start justify-center gap-[10px] flex-col">
-            <p className="flex items-center gap-[10px] text-[16px] font-light">
-              <input
-                type="checkbox"
-                value={"Men"}
-                className="w-3"
-                onChange={toggleCategory}
-              />{" "}
-              Men
-            </p>
-            <p className="flex items-center gap-[10px] text-[16px] font-light">
-              <input
-                type="checkbox"
-                value={"Women"}
-                className="w-3"
-                onChange={toggleCategory}
-              />{" "}
-              Women
-            </p>
-            <p className="flex items-center gap-[10px] text-[16px] font-light">
-              <input
-                type="checkbox"
-                value={"Kids"}
-                className="w-3"
-                onChange={toggleCategory}
-              />{" "}
-              Kids
-            </p>
+      </section>
+      <section className="container collection-content">
+        <div className="catalog-toolbar">
+          <div className="filter-tabs">
+            {["All", "Men", "Women", "Kids"].map((c) => (
+              <button
+                key={c}
+                className={c === category ? "selected" : ""}
+                onClick={() => setParams(c === "All" ? {} : { category: c })}
+              >
+                {c === "All" ? "Shop all" : c}
+              </button>
+            ))}
           </div>
+          <label className="sort-label">
+            Sort by{" "}
+            <select value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value="newest">Featured</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+            </select>
+          </label>
         </div>
-
-        {/* Sub Categories */}
-        <div
-          className={`border-[2px] border-[#dedcdc] pl-5 py-3 mt-6 rounded-md bg-slate-600 ${
-            showFilter ? "" : "hidden"
-          } md:block`}
-        >
-          <p className="text-[18px] text-[#f8fafa] ">SUB CATEGORIES</p>
-          <div className="w-[230px] h-[120px] flex items-start justify-center gap-[10px] flex-col">
-            <p className="flex items-center gap-[10px] text-[16px] font-light">
-              <input
-                type="checkbox"
-                value={"TopWear"}
-                className="w-3"
-                onChange={toggleSubCategory}
+        <div className="catalog-search">
+          <FiSearch />
+          <input
+            aria-label="Search products"
+            placeholder="Search your next favourite…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {search && (
+            <button aria-label="Clear search" onClick={() => setSearch("")}>
+              <FiX />
+            </button>
+          )}
+          <span>{items.length} finds</span>
+        </div>
+        {productsLoading || productsError || !items.length ? (
+          <CatalogState empty={!items.length} />
+        ) : (
+          <div className="product-grid">
+            {items.map((p) => (
+              <Card
+                key={p._id}
+                name={p.name}
+                image={p.image1}
+                price={p.price}
+                id={p._id}
               />
-              Topwear
-            </p>
-            <p className="flex items-center gap-[10px] text-[16px] font-light">
-              <input
-                type="checkbox"
-                value={"BottomWear"}
-                className="w-3"
-                onChange={toggleSubCategory}
-              />
-              Bottomwear
-            </p>
-            <p className="flex items-center gap-[10px] text-[16px] font-light">
-              <input
-                type="checkbox"
-                value={"WinterWear"}
-                className="w-3"
-                onChange={toggleSubCategory}
-              />
-              WinterWear
-            </p>
+            ))}
           </div>
-        </div>
-      </div>
-
-      {/* Products */}
-      <div className="lg:pl-[20%] md:py-[10px]">
-        <div className="md:w-[80vw] w-[100vw] p-[20px] flex justify-between flex-col lg:flex-row lg:px-[50px]">
-          <Title text1={"ALL"} text2={"COLLECTIONS"} />
-          <select
-            className="bg-slate-600 w-[60%] md:w-[200px] h-[50px] px-[10px] text-[white] rounded-lg hover:border-[#46d1f7] border-[2px]"
-            onChange={(e) => setSortType(e.target.value)}
-          >
-            <option value="relavent">Sort By: Relevant</option>
-            <option value="low-high">Sort By: Low to High</option>
-            <option value="high-low">Sort By: High to Low</option>
-          </select>
-        </div>
-
-        <div className="lg:w-[80vw] md:w-[60vw] w-[100vw] min-h-[70vh] flex items-center justify-center flex-wrap gap-[30px]">
-          {filterProduct.map((item, index) => (
-            <Card
-              key={index}
-              id={item._id}
-              name={item.name}
-              price={item.price}
-              image={item.image1}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
+        )}
+      </section>
+      <Footer />
+    </main>
   );
 }
-
-export default Collections;

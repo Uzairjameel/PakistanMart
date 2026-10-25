@@ -1,144 +1,193 @@
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { authDataContext } from "./AuthContext";
-import axios from 'axios'
+import axios from "axios";
 import { UserDataContext } from "./UserContext";
 
-export const shopDataContext = createContext()
+export const shopDataContext = createContext();
 
-function ShopContext({children}) {
+function ShopContext({ children }) {
+  let [products, setProducts] = useState([]);
+  let [search, setSearch] = useState("");
+  let [showSearch, setShowSearch] = useState(false);
+  let [cartItem, setCartItem] = useState({});
+  let { ServerUrl } = useContext(authDataContext);
+  let { UserData } = useContext(UserDataContext);
+  let currency = "Rs.";
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState("");
+  let delivery_fee = 10;
 
-    let [products,setProducts] = useState([])
-    let [search,setSearch] = useState('')
-    let [showSearch,setShowSearch] = useState(false)
-    let [cartItem,setCartItem] = useState({})
-    let {ServerUrl} = useContext(authDataContext)
-    let {UserData} = useContext(UserDataContext)
-    let currency = '₹';
-    let delivery_fee = 10;
+  const getProducts = useCallback(async () => {
+    setProductsLoading(true);
+    setProductsError("");
+    try {
+      const result = await axios.get(ServerUrl + "/api/product/list", {
+        withCredentials: false,
+        timeout: 20000,
+      });
+      const data = Array.isArray(result.data)
+        ? result.data
+        : result.data?.products;
+      if (
+        !Array.isArray(data) ||
+        data.some(
+          (p) =>
+            !p ||
+            typeof p._id !== "string" ||
+            typeof p.name !== "string" ||
+            !Number.isFinite(Number(p.price)),
+        )
+      )
+        throw new Error("Invalid catalogue response");
+      setProducts(data);
+    } catch {
+      setProductsError(
+        "The product catalogue is unavailable. Please try again.",
+      );
+    } finally {
+      setProductsLoading(false);
+    }
+  }, [ServerUrl]);
 
-    const getProducts =useCallback( async () => {
+  const addtocart = async (itemId, size) => {
+    if (!size) {
+      console.log("Select Product Size");
+      return;
+    }
+
+    let cartData = structuredClone(cartItem);
+    if (cartData[itemId]) {
+      if (cartData[itemId][size]) {
+        cartData[itemId][size] += 1;
+      } else {
+        cartData[itemId][size] = 1;
+      }
+    } else {
+      cartData[itemId] = {};
+      cartData[itemId][size] = 1;
+    }
+    if (UserData) {
+      try {
+        let result = await axios.post(
+          ServerUrl + "/api/cart/add",
+          { itemId, size },
+          { withCredentials: true, timeout: 15000 },
+        );
+        console.log(result.data);
+      } catch {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    setCartItem(cartData);
+    return true;
+  };
+
+  const getUsarCart = useCallback(async () => {
+    try {
+      const result = await axios.post(
+        ServerUrl + "/api/cart/get",
+        {},
+        { withCredentials: true },
+      );
+      setCartItem(result.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }, [ServerUrl]);
+
+  const updateQuantity = async (itemId, size, quantity) => {
+    let cartData = structuredClone(cartItem);
+    cartData[itemId][size] = quantity;
+    setCartItem(cartData);
+
+    if (UserData) {
+      try {
+        await axios.post(
+          ServerUrl + "/api/cart/update",
+          { itemId, size, quantity },
+          { withCredentials: true },
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const getCartCount = () => {
+    let totalCount = 0;
+    for (const items in cartItem) {
+      for (const item in cartItem[items]) {
         try {
-            let result = await axios.get(ServerUrl+'/api/product/list')
-            console.log(result.data)
-            setProducts(result.data)
+          if (cartItem[items][item] > 0) {
+            totalCount += cartItem[items][item];
+          }
         } catch (error) {
-         console.log(error)   
+          console.log(error);
         }
-    },[ServerUrl])
-
-    const addtocart = async (itemId,size) => {
-        if (!size) {
-            console.log('Select Product Size')
-            return;
-        }
-
-        let cartData = structuredClone(cartItem)
-        if (cartData[itemId]) {
-            if (cartData[itemId][size]) {
-                cartData[itemId][size] +=1;
-            } else{
-                cartData[itemId][size] =1;
-            }
-        } else{
-            cartData[itemId]={};
-            cartData[itemId][size]=1;
-        }
-        setCartItem(cartData)
-      
-        if (UserData) {
-            try {
-            let result = await axios.post(ServerUrl+'/api/cart/add',{itemId,size},{withCredentials:true})
-            console.log(result.data)
-            } catch (error) {
-                console.log(error)
-            }
-        }else{
-            console.log('Add error')
-        }
-
-        
+      }
     }
+    return totalCount;
+  };
 
-    const getUsarCart = useCallback(async () => {
-            try {
-                const result = await axios.post(ServerUrl + '/api/cart/get',{},{withCredentials:true})
-                setCartItem(result.data)
-            } catch (error) {
-                console.log(error)
-            }
-        },[ServerUrl])
-
-
-    const updateQuantity = async (itemId,size,quantity) => {
-        let cartData = structuredClone(cartItem);
-        cartData[itemId][size] = quantity
-        setCartItem(cartData)
-
-
-        if (UserData) {
+  const getCartAmount = () => {
+    let totalAmount = 0;
+    for (const items in cartItem) {
+      let itemInfo = products.find((product) => product._id === items);
+      for (const item in cartItem[items]) {
         try {
-            await axios.post(ServerUrl+'/api/cart/update',{itemId,size,quantity},{withCredentials:true})
+          if (cartItem[items][item] > 0) {
+            totalAmount += itemInfo.price * cartItem[items][item];
+          }
         } catch (error) {
-            console.log(error)
+          console.log(error);
         }
+      }
     }
+    return totalAmount;
+  };
 
-    }    
+  useEffect(() => {
+    getProducts();
+  }, [getProducts]);
 
+  useEffect(() => {
+    if (UserData) getUsarCart();
+    else setCartItem({});
+  }, [getUsarCart, UserData]);
 
-
-
-    const getCartCount=()=>{
-        let totalCount = 0;
-        for(const items in cartItem){
-            for(const item in cartItem[items]){
-                try {
-                    if (cartItem[items][item]>0) {
-                        totalCount+=cartItem[items][item]
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
-            }
-        }
-        return totalCount
-    }
-
-    const getCartAmount =  () => {
-        let totalAmount = 0;
-        for(const items in cartItem){
-            let itemInfo = products.find((product)=>product._id ===items);
-            for(const item in cartItem[items]){
-                try {
-                    if (cartItem[items][item]>0) {
-                        totalAmount += itemInfo.price*cartItem[items][item];
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
-            }
-        }
-        return totalAmount
-    }
-
-    useEffect(()=>{
-        getProducts()
-    },[getProducts])
-
-   useEffect(()=>{
-    getUsarCart()
-   },[getUsarCart])
-
-    let value={
-        products,currency,delivery_fee,getProducts,search,setSearch,showSearch,setShowSearch,cartItem,addtocart,getCartCount,setCartItem,updateQuantity,getCartAmount
-    }
-    return(
-        <div>
-            <shopDataContext.Provider value={value}>
-                {children}
-            </shopDataContext.Provider>
-        </div>
-    )
+  let value = {
+    products,
+    productsLoading,
+    productsError,
+    currency,
+    delivery_fee,
+    getProducts,
+    search,
+    setSearch,
+    showSearch,
+    setShowSearch,
+    cartItem,
+    addtocart,
+    getCartCount,
+    setCartItem,
+    updateQuantity,
+    getCartAmount,
+  };
+  return (
+    <div>
+      <shopDataContext.Provider value={value}>
+        {children}
+      </shopDataContext.Provider>
+    </div>
+  );
 }
 
-export default ShopContext
+export default ShopContext;
