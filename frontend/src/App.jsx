@@ -21,7 +21,7 @@ function App() {
     let location = useLocation()
     return(
         <>
-        {UserData && <Nav/>}
+        {!["/login", "/singup"].includes(location.pathname) && <Nav/>}
         <Routes>
 
             <Route path='/login' element={UserData ?(<Navigate to={location.state?.from ||'/'}/>)
@@ -32,28 +32,22 @@ function App() {
             :(<Registration/>)}/>
 
             <Route path='/' 
-            element={UserData?<Home/>:<Navigate to='/login' state=
-            {{from: location.pathname}}/>}/>
+            element={<Home/>}/>
 
             <Route path='/about' 
-            element={UserData?<About/>:<Navigate to='/login' state=
-            {{from: location.pathname}}/>}/>
+            element={<About/>}/>
 
             <Route path='/collection' 
-            element={UserData?<Collections/>:<Navigate to='/login' state=
-            {{from: location.pathname}}/>}/>
+            element={<Collections/>}/>
 
             <Route path='/product' 
-            element={UserData?<Product/>:<Navigate to='/login' state=
-            {{from: location.pathname}}/>}/>
+            element={<Product/>}/>
 
             <Route path='/contact' 
-            element={UserData?<Contact/>:<Navigate to='/login' state=
-            {{from: location.pathname}}/>}/>
+            element={<Contact/>}/>
 
             <Route path='/productdetail/:productId' 
-            element={UserData?<ProductDetail/>:<Navigate to='/login' state=
-            {{from: location.pathname}}/>}/>
+            element={<ProductDetail/>}/>
 
             <Route path='/cart' 
             element={UserData?<Cart/>:<Navigate to='/login' state=
